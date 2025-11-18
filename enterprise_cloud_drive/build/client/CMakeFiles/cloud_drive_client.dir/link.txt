@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/cloud_drive_client.dir/src/main.cpp.o -o cloud_drive_client  libcloud_drive_client_lib.a -lpthread -lcrypto 

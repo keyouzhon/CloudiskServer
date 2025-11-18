@@ -1,0 +1,45 @@
++------------+------------+-----------+--------+-----+-------------------------+-----------------+------------------------+------+
+| [38;5;47;01mstudent_id[39;00m | [38;5;47;01mfirst_name[39;00m | [38;5;47;01mlast_name[39;00m | [38;5;47;01mgender[39;00m | [38;5;47;01mage[39;00m | [38;5;47;01memail[39;00m                   | [38;5;47;01menrollment_date[39;00m | [38;5;47;01mmajor[39;00m                  | [38;5;47;01mgpa[39;00m  |
++------------+------------+-----------+--------+-----+-------------------------+-----------------+------------------------+------+
+| 1          | Alice      | Smith     | Female | 20  | alice.smith@example.com | 2022-09-01      | Computer Science       | 3.85 |
+| 2          | Bob        | Johnson   | Male   | 21  | bob.j@example.com       | 2021-09-01      | Electrical Engineering | 3.20 |
+| 3          | Charlie    | Brown     | Male   | 20  | charlie.b@example.com   | 2022-09-01      | Mathematics            | 3.90 |
+| 4          | Diana      | Prince    | Female | 22  | diana.p@example.com     | 2020-09-01      | Physics                | 3.75 |
+| 5          | Eve        | Davis     | Female | 19  | eve.d@example.com       | 2023-09-01      | Biology                | 3.10 |
+| 6          | Frank      | Miller    | Male   | 23  | frank.m@example.com     | 2020-09-01      | Computer Science       | 3.50 |
+| 7          | Grace      | Wilson    | Female | 20  | grace.w@example.com     | 2022-09-01      | Chemistry              | 3.65 |
+| 8          | Henry      | Moore     | Male   | 21  | henry.m@example.com     | 2021-09-01      | History                | 2.95 |
+| 9          | Ivy        | Taylor    | Female | 19  | ivy.t@example.com       | 2023-09-01      | Computer Science       | 4.00 |
+| 10         | Jack       | Anderson  | Male   | 22  | jack.a@example.com      | 2021-09-01      | Economics              | 3.30 |
+| 11         | Karen      | Thomas    | Female | 20  | karen.t@example.com     | 2022-09-01      | Psychology             | 3.45 |
+| 12         | Liam       | Jackson   | Male   | 23  | liam.j@example.com      | 2020-09-01      | Civil Engineering      | 3.00 |
+| 13         | Mia        | White     | Female | 21  | mia.w@example.com       | 2021-09-01      | Art History            | 3.60 |
+| 14         | Noah       | Harris    | Male   | 20  | noah.h@example.com      | 2022-09-01      | Computer Science       | 3.95 |
+| 15         | Olivia     | Martin    | Female | 22  | olivia.m@example.com    | 2020-09-01      | Physics                | 3.80 |
+| 16         | Peter      | Garcia    | Male   | 19  | peter.g@example.com     | 2023-09-01      | Biology                | 3.05 |
+| 17         | Quinn      | Rodriguez | Female | 21  | quinn.r@example.com     | 2021-09-01      | Mathematics            | 3.70 |
+| 18         | Ryan       | Martinez  | Male   | 20  | ryan.m@example.com      | 2022-09-01      | Electrical Engineering | 3.15 |
+| 19         | Sophia     | Hernandez | Female | 23  | sophia.h@example.com    | 2020-09-01      | Chemistry              | 3.55 |
+| 20         | Tom        | Lopez     | Male   | 19  | tom.l@example.com       | 2023-09-01      | History                | 2.80 |
+| 21         | Ursula     | Gonzales  | Female | 20  | ursula.g@example.com    | 2022-09-01      | Computer Science       | 3.92 |
+| 22         | Victor     | Perez     | Male   | 21  | victor.p@example.com    | 2021-09-01      | Economics              | 3.25 |
+| 23         | Wendy      | Sanchez   | Female | 22  | wendy.s@example.com     | 2020-09-01      | Psychology             | 3.40 |
+| 24         | Xavier     | Ramirez   | Male   | 19  | xavier.r@example.com    | 2023-09-01      | Civil Engineering      | 2.90 |
+| 25         | Yara       | Torres    | Female | 20  | yara.t@example.com      | 2022-09-01      | Art History            | 3.58 |
+| 26         | Zane       | Flores    | Male   | 21  | zane.f@example.com      | 2021-09-01      | Computer Science       | 3.88 |
+| 27         | Anna       | Gomez     | Female | 22  | anna.g@example.com      | 2020-09-01      | Physics                | 3.78 |
+| 28         | Ben        | Diaz      | Male   | 19  | ben.d@example.com       | 2023-09-01      | Biology                | 3.12 |
+| 29         | Cathy      | Reyes     | Female | 20  | cathy.r@example.com     | 2022-09-01      | Mathematics            | 3.80 |
+| 30         | David      | Cruz      | Male   | 21  | david.c@example.com     | 2021-09-01      | Electrical Engineering | 3.22 |
+| 31         | Emily      | Morales   | Female | 20  | emily.m@example.com     | 2022-09-01      | Chemistry              | 3.68 |
+| 32         | Fred       | Gutierrez | Male   | 23  | fred.g@example.com      | 2020-09-01      | History                | 2.98 |
+| 33         | Gina       | Ortiz     | Female | 19  | gina.o@example.com      | 2023-09-01      | Computer Science       | 3.98 |
+| 34         | Harry      | Vazquez   | Male   | 22  | harry.v@example.com     | 2021-09-01      | Economics              | 3.35 |
+| 35         | Isabel     | Chavez    | Female | 20  | isabel.c@example.com    | 2022-09-01      | Psychology             | 3.50 |
+| 36         | Justin     | Salazar   | Male   | 23  | justin.s@example.com    | 2020-09-01      | Civil Engineering      | 3.02 |
+| 37         | Kelly      | Herrera   | Female | 21  | kelly.h@example.com     | 2021-09-01      | Art History            | 3.62 |
+| 38         | Leo        | Ruiz      | Male   | 20  | leo.r@example.com       | 2022-09-01      | Computer Science       | 3.93 |
+| 39         | Megan      | Vega      | Female | 22  | megan.v@example.com     | 2020-09-01      | Physics                | 3.82 |
+| 40         | Nick       | Soto      | Male   | 19  | nick.s@example.com      | 2023-09-01      | Biology                | 3.08 |
++------------+------------+-----------+--------+-----+-------------------------+-----------------+------------------------+------+
+

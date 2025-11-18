@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/cloud_drive_server.dir/src/main.cpp.o -o cloud_drive_server  libcloud_drive_server_lib.a -lsqlite3 -lssl -lcrypto -lpthread 

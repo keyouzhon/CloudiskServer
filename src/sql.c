@@ -1,29 +1,32 @@
 #include "../include/sql.h"
 //#include "head.h"
 
+// 连接数据库
 int sql_connect(MYSQL **conn)
 {
     char server[]="localhost";
     char user[]="root";
-    char password[]="950711";
-    char database[]="Netdisk";//要访问的数据库名称
+    char password[]="root";
+    char database[]="Netdisk";// 要访问的数据库名称
     *conn=mysql_init(NULL);
     if(!mysql_real_connect(*conn,server,user,password,database,0,NULL,0))
     {
         //    printf("Error connecting to database:%s\n",mysql_error(*conn));
-        exit(0);
+        exit(0); // 连接失败直接退出
     }else{
         // printf("Connected...\n");
     }
     return 0;
 }
+
+// 查找用户名对应的盐值，找不到返回-1，否则返回0并将salt存入形参
 int find_name(MYSQL *conn,char *name,char * salt)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
     char query[300]="select salt from User where name='";
     sprintf(query,"%s%s%s",query, name,"'");
-    puts(query);
+    puts(query); // 输出SQL语句，便于调试
     int t,ret =-1;
     t=mysql_query(conn,query);
     if(t)
@@ -41,8 +44,8 @@ int find_name(MYSQL *conn,char *name,char * salt)
                 else
                 {
                     if(salt !=NULL)
-                        strcpy(salt,row[0]);
-                    ret = 0;
+                        strcpy(salt,row[0]); // 复制salt值
+                    ret = 0; // 找到则返回0
                 }
             }
             //   printf("res=NULL\n");
@@ -54,30 +57,34 @@ int find_name(MYSQL *conn,char *name,char * salt)
         return ret;
     }
 }
+
+// 生成随机盐值
 void get_salt(char *str)
 {
     str[STR_LEN + 1] = 0;
     int i,flag;
-    srand(time(NULL));
+    srand(time(NULL)); // 设置随机种子
     for(i = 0; i < STR_LEN; i ++)
     {
         flag = rand()%3;
         switch(flag)
         {
         case 0:
-            str[i] = rand()%26 + 'a';
+            str[i] = rand()%26 + 'a'; // 小写字母
             break;
         case 1:
-            str[i] = rand()%26 + 'A';
+            str[i] = rand()%26 + 'A'; // 大写字母
             break;
         case 2:
-            str[i] = rand()%10 + '0';
+            str[i] = rand()%10 + '0'; // 数字
             break;
         }
     }
-    *str='$';str[1]='5';str[2]='$';
+    *str='$';str[1]='5';str[2]='$'; // 用于加密方式的特殊格式（如sha256)
     return;
 }
+
+// 插入新用户
 void add_user(MYSQL *conn,char *name,char *salt,char *mima)
 {
     char query[200]="insert into User (name,salt,ciphertext)values(";
@@ -92,6 +99,8 @@ void add_user(MYSQL *conn,char *name,char *salt,char *mima)
         printf("insert success\n");
     }
 }
+
+// 匹配用户名与密码，成功则更新token
 int math_user(MYSQL *conn,char *name,char *password,char *token)
 {
     int ret =-1;
@@ -114,19 +123,19 @@ int math_user(MYSQL *conn,char *name,char *password,char *token)
             if((row=mysql_fetch_row(res))!=NULL)
             {
                 if(*row[0] == 0)
-                    ret = -1;
+                    ret = -1; // 数据为空，账号不存在
                 else if(strcmp(row[0],password)!=0)
                 {
-                    ret = -1;
+                    ret = -1; // 密码不匹配
                 }
                 else
                 {
-                    ret = 0;
+                    ret = 0; // 用户名密码匹配
                     mysql_free_result(res);
                     char pquery[200]="update User set token='";
                     strcpy(query,"where name ='");
                     sprintf(pquery,"%s%s' %s%s'",pquery,token,query,name);
-                    //          puts(pquery);
+                    // puts(pquery);
                     t=mysql_query(conn,pquery);
                     if(t)
                     {
@@ -146,6 +155,7 @@ int math_user(MYSQL *conn,char *name,char *password,char *token)
     return ret;
 }
 //主函数更新的数据；
+// 校验token，token匹配返回0，不匹配返回-1
 int math_token(MYSQL *conn,char *name,char *token)
 {
     int ret =-1;
@@ -168,10 +178,10 @@ int math_token(MYSQL *conn,char *name,char *token)
             if((row=mysql_fetch_row(res))!=NULL)
             {
                 if(*row[0] == 0)
-                    ret = -1;
+                    ret = -1; // 未查到该用户
                 else if(strcmp(row[0],token)==0)
                 {
-                    ret = 0;
+                    ret = 0; // token匹配
                 }
             }
         }else{
@@ -183,12 +193,13 @@ int math_token(MYSQL *conn,char *name,char *token)
     return ret;
 }
 
+// 展示目录内容ls
 void ls_func(MYSQL *conn,char*name,int code,char *buf)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
-//    *buf='\n';
-//    buf[1]=0;
+    //*buf='\n';
+    //*buf[1]=0;
     *buf =0;
     char query[300]="select filetype ,filename ,filesize from Directory where belongID=";
     sprintf(query,"%s'%s' and procode =%d",query, name,code);
@@ -209,22 +220,21 @@ void ls_func(MYSQL *conn,char*name,int code,char *buf)
                 sprintf(buf,"%s-%-10s%-20s %10s B\n",buf,row[0],row[1],row[2]);
             }
         }else{
-            //       printf("Don't find data\n");
+            // printf("Don't find data\n");
         }
         mysql_free_result(res);
     }
     return ;
 }
 
-
-//返回当前code（pcode）下的上级目录的code，并把当前目录名保存到path中，失败-1；
+// 返回当前code（pcode）下的上级目录的code，并把当前目录名保存到path中，失败-1
 int find_pre_code(MYSQL *conn,char*path,int pcode)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
     char query[300]="select procode,filename from Directory where code=";
     sprintf(query,"%s%d",query, pcode);
-    //  puts(query);
+    // puts(query);
     int t,ret=-1;
     t=mysql_query(conn,query);
     if(t)
@@ -232,15 +242,15 @@ int find_pre_code(MYSQL *conn,char*path,int pcode)
         printf("Error making query:%s\n",mysql_error(conn));
     }else
     {
-        //      printf("Query made...\n");
+        // printf("Query made...\n");
         res=mysql_use_result(conn);
         if(res)
         {
             if((row=mysql_fetch_row(res))!=NULL)
             {
-                //             printf("procode = %d\n",atoi(row[0]));
+                // printf("procode = %d\n",atoi(row[0]));
                 strcpy(path,row[1]);
-                //             printf("path =%s\n",path);
+                // printf("path =%s\n",path);
                 ret = atoi(row[0]);
             }
         }else{
@@ -250,17 +260,16 @@ int find_pre_code(MYSQL *conn,char*path,int pcode)
         mysql_free_result(res);
     }
     return ret;
-
 }
 
-//返回code下一级filename的code值（智能是文件夹）；
+// 返回code下一级filename的code值（只能是文件夹）
 int find_later_code(MYSQL *conn,int cur_code,char *filename,char *name)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
     char query[300]="select code from Directory where procode=";
     sprintf(query,"%s%d and belongID= '%s'and filetype = 'd' and filename ='%s'",query, cur_code,name,filename);
-    //  puts(query);
+    // puts(query);
     int t,ret=-1;
     t=mysql_query(conn,query);
     if(t)
@@ -268,13 +277,13 @@ int find_later_code(MYSQL *conn,int cur_code,char *filename,char *name)
         printf("Error making query:%s\n",mysql_error(conn));
     }else
     {
-        //     printf("Query made...\n");
+        // printf("Query made...\n");
         res=mysql_use_result(conn);
         if(res)
         {
             if((row=mysql_fetch_row(res))!=NULL)
             {
-                //             printf("code = %d\n",atoi(row[0]));
+                // printf("code = %d\n",atoi(row[0]));
                 ret = atoi(row[0]);
             }
         }else{
@@ -286,14 +295,14 @@ int find_later_code(MYSQL *conn,int cur_code,char *filename,char *name)
     return ret;
 }
 
-//返回code下一级filename的code值（文件和文件夹都可以）//可以搞个开关传参，懒得写了；
+// 返回code下一级filename的code值（文件或文件夹都可以）
 int find_later_file(MYSQL *conn,int cur_code,char *filename,char *name)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
     char query[300]="select code from Directory where procode=";
     sprintf(query,"%s%d and belongID= '%s'and filename ='%s'",query, cur_code,name,filename);
-    //  puts(query);
+    // puts(query);
     int t,ret=-1;
     t=mysql_query(conn,query);
     if(t)
@@ -301,13 +310,13 @@ int find_later_file(MYSQL *conn,int cur_code,char *filename,char *name)
         printf("Error making query:%s\n",mysql_error(conn));
     }else
     {
-        //       printf("Query made...\n");
+        // printf("Query made...\n");
         res=mysql_use_result(conn);
         if(res)
         {
             if((row=mysql_fetch_row(res))!=NULL)
             {
-                //             printf("code = %d\n",atoi(row[0]));
+                // printf("code = %d\n",atoi(row[0]));
                 ret = atoi(row[0]);
             }
         }else{
@@ -319,20 +328,20 @@ int find_later_file(MYSQL *conn,int cur_code,char *filename,char *name)
     return ret;
 }
 
-//失败无操作，返回-1，成功会改变路径，火车上装上code，路径；
-//pqq->buf 是操作，buf1是内容；
-int cd_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pcode)//buf1是移动后的路径；
+// cd命令实现。失败无操作，返回-1，成功更新路径、code等信息至输出参数。
+int cd_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pcode)
 {
     char tranbuf[200];
     MYSQL_RES *res;
     MYSQL_ROW row;
+    // 处理“..”返回上级目录
     if(strcmp(pqq_msg->buf1,"..")==0)
     {
         if(*pcode==0)
             return -1;
         char query[300]="select procode from Directory where code=";
         sprintf(query,"%s%d and belongID= '%s'",query, *pcode,name);
-        //     puts(query);
+        // puts(query);
         int t;
         t=mysql_query(conn,query);
         if(t)
@@ -340,14 +349,13 @@ int cd_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pcode)/
             printf("Error making query:%s\n",mysql_error(conn));
         }else
         {
-            //        printf("Query made...\n");
+            // printf("Query made...\n");
             res=mysql_use_result(conn);
             if(res)
             {
                 if((row=mysql_fetch_row(res))!=NULL)
                 {
-                    *pcode = atoi(row[0]);
-                    //                 printf("code = %d\n",*pcode);
+                    *pcode = atoi(row[0]); // 更新code为父目录
                 }
                 else
                 {
@@ -361,6 +369,7 @@ int cd_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pcode)/
             mysql_free_result(res);
         }
     }
+    // 处理绝对路径，从根目录逐层进入
     else if(*pqq_msg->buf1 =='/')
     {
         int ret ,code =0;
@@ -381,22 +390,24 @@ int cd_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pcode)/
                 if(ret == -1)
                     return -1;
                 code = ret;
-                //              printf("%s :   code = %d\n",pre,code);
+                // printf("%s :   code = %d\n",pre,code);
                 pre = pcur;
             }
         }
         *pcode = code;
-        //     printf("*pcode = %d",*pcode);
+        // printf("*pcode = %d",*pcode);
     }
+    // 相对路径进入子文件夹
     else
     {
         int ret = find_later_code(conn,*pcode,pqq_msg->buf1,name);
         if(ret == -1)
             return -1;
         *pcode = ret;
-        //       printf("curcode = %d",*pcode);
+        // printf("curcode = %d",*pcode);
     }
     int ret;
+    // 回溯拼接路径
     node head,*pnew = (node*)calloc(1,sizeof(node)),*q;
     head.next=0;
     ret = find_pre_code(conn,pnew->path,*pcode);
@@ -428,13 +439,14 @@ int cd_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pcode)/
     return 0;
 }
 
+// 删除文件或文件夹，返回0成功、-1失败
 int delete_file(MYSQL *conn,int code,char *name)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
     char query[300]="select * from Directory where procode=";
     sprintf(query,"%s%d and belongID= '%s'",query, code,name);
-    //   puts(query);
+    // puts(query);
     int t;
     t=mysql_query(conn,query);
     if(t)
@@ -442,15 +454,15 @@ int delete_file(MYSQL *conn,int code,char *name)
         printf("Error making query:%s\n",mysql_error(conn));
     }else
     {
-        //      printf("Query made...\n");
+        // printf("Query made...\n");
         res=mysql_use_result(conn);
         if(res)
         {
             if((row=mysql_fetch_row(res))!=NULL)
             {
-                //              printf("first filename = %s\n",row[0]);
+                // printf("first filename = %s\n",row[0]);
                 mysql_free_result(res);
-                return -1;
+                return -1; // 目录下还有文件，不能删除
             }
         }else{
             printf("查询出错\n");
@@ -460,7 +472,7 @@ int delete_file(MYSQL *conn,int code,char *name)
     }
     strcpy(query,"delete from Directory where code=");
     sprintf(query,"%s%d",query,code);
-    //   puts(query);
+    // puts(query);
     t=mysql_query(conn,query);
     if(t)
     {
@@ -471,18 +483,20 @@ int delete_file(MYSQL *conn,int code,char *name)
     return 0;
 }
 
-//ptrain用来装车，cd成功车上有货，失败没装，其他都是len为零操作成功的小火车；
-//qqmsg有操作和内容，name是client name，pcode是cilent上的code地址；
+// 统一处理操作：mkdir、cd、rm
+// ptrain用来装车，cd成功车上有货，失败没装，其他都是len为零操作成功的小火车；
+// qqmsg有操作和内容，name是client name，pcode是cilent上的code地址；
 int operate_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pcode)
 {
     MYSQL_RES *res;
     MYSQL_ROW row;
     if(strcmp(pqq_msg->buf,"mkdir")==0)
     {
+        // 判断是否重名
         char qquery[300]="select * from Directory where procode=";
         sprintf(qquery,"%s%d and filename ='%s'and belongID='%s'",qquery,*pcode,
                 pqq_msg->buf1,name);
-        //        puts(qquery);
+        // puts(qquery);
         int t;
         t=mysql_query(conn,qquery);
         if(t)
@@ -490,21 +504,23 @@ int operate_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pc
             printf("Error making query:%s\n",mysql_error(conn));
         }else
         {
-            //            printf("Query made...\n");
+            // printf("Query made...\n");
             res=mysql_use_result(conn);
             if(res)
             {
                 if((row=mysql_fetch_row(res))!=NULL)
                 {
+                    // 已存在同名文件夹
                     mysql_free_result(res);
                     return -1;
                 }
                 else
                 {
                     mysql_free_result(res);
+                    // 插入目录项
                     char query[300]="insert into Directory (procode,filename,belongID,filetype)values(";
                     sprintf(query,"%s%d,'%s','%s','%s')",query,*pcode,pqq_msg->buf1,name,"d");
-                    //                 printf("query= %s\n",query);
+                    // printf("query= %s\n",query);
                     int t;
                     t=mysql_query(conn,query);
                     if(t)
@@ -524,7 +540,7 @@ int operate_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pc
         }
     }else if(strcmp(pqq_msg->buf,"cd")==0)
     {
-        int ret = cd_func(conn,ptrain,pqq_msg,name,pcode);
+        int ret = cd_func(conn,ptrain,pqq_msg,name,pcode); // 执行cd
         if(ret == -1)
             return -1;
         else
@@ -532,7 +548,7 @@ int operate_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pc
     }
     else if(strcmp(pqq_msg->buf,"rm")==0)
     {
-        //先返回想删的文件的code
+        // 先获得将要删除的文件对应code
         int ret = find_later_file(conn,*pcode,pqq_msg->buf1,name);
         if(ret == -1)
             return -1;
@@ -548,6 +564,7 @@ int operate_func(MYSQL *conn,Train_t *ptrain,QUR_msg *pqq_msg,char *name,int *pc
     return -1;
 }
 
+// 查询文件信息（md5和文件大小）并写入pfile_info，成功返回0，失败-1
 int find_file_info(MYSQL *conn,File_info *pfile_info,char*name,int code)
 {
     MYSQL_RES *res;
@@ -567,8 +584,8 @@ int find_file_info(MYSQL *conn,File_info *pfile_info,char*name,int code)
         {
             if((row=mysql_fetch_row(res))!=NULL)
             {
-                pfile_info->filesize = atoi(row[0]);
-                strcpy(pfile_info->md5sum,row[1]);
+                pfile_info->filesize = atoi(row[0]); // 写入文件大小
+                strcpy(pfile_info->md5sum,row[1]);   // 写入md5
                 ret = 0;
             }
         }else{
@@ -578,8 +595,9 @@ int find_file_info(MYSQL *conn,File_info *pfile_info,char*name,int code)
         mysql_free_result(res);
     }
     return ret;
-
 }
+
+// 上传时，数据库中存在同名文件返回-1，不存在且服务器有分块副本返回1否则返回0
 int math_uoload(MYSQL *conn,File_info *pfile_info,char*name,int code)
 {
     MYSQL_RES *res;
@@ -588,7 +606,7 @@ int math_uoload(MYSQL *conn,File_info *pfile_info,char*name,int code)
     char query[300] ="select filesize from Directory where procode=";
     sprintf(query,"%s%d and belongID= '%s'and filetype = 'f' and filename ='%s'",query, code,name,pfile_info->filename);
     t=mysql_query(conn,query);
-//    puts(query);
+    //puts(query);
     if(t)
     {
         printf("Error making query:%s\n",mysql_error(conn));
@@ -599,21 +617,21 @@ int math_uoload(MYSQL *conn,File_info *pfile_info,char*name,int code)
         {
             if((row=mysql_fetch_row(res))!=NULL)
             {
-                ret = -1;
+                ret = -1; // 文件已存在
             }else
-                ret = 0;
+                ret = 0; // 不存在，继续判断是否有同样分块
         }else{
             printf("查询出错\n");
             exit(0);
         }
         mysql_free_result(res);
     }
-//    printf("ret = %d\n",ret);
+    //printf("ret = %d\n",ret);
     if(ret == -1)
         return -1;
     strcpy(query,"select filesize from Directory where md5sum=");
     sprintf(query,"%s'%s'",query,pfile_info->md5sum);
-//    puts(query);
+    //puts(query);
     t=mysql_query(conn,query);
     if(t)
     {
@@ -625,7 +643,7 @@ int math_uoload(MYSQL *conn,File_info *pfile_info,char*name,int code)
         {
             if((row=mysql_fetch_row(res))!=NULL)
             {
-                ret = 1;
+                ret = 1; // 有分块副本可用
             }
         }else{
             printf("查询出错\n");
@@ -633,13 +651,13 @@ int math_uoload(MYSQL *conn,File_info *pfile_info,char*name,int code)
         }
         mysql_free_result(res);
     }
-//    printf("ret = %d\n",ret);
+    //printf("ret = %d\n",ret);
     if(ret == 1)
     {
         strcpy(query,"insert into Directory (procode,filename,belongID,filetype,md5sum,filesize)values");
         sprintf(query,"%s(%d,'%s','%s','f','%s',%d)",query,code,pfile_info->filename,
                 name,pfile_info->md5sum,pfile_info->filesize);
- //       puts(query);
+        //puts(query);
         t=mysql_query(conn,query);
         if(t)
         {
@@ -650,6 +668,8 @@ int math_uoload(MYSQL *conn,File_info *pfile_info,char*name,int code)
     }
     return ret;
 }
+
+// 添加文件数据库记录（独立新连接）
 void add_file(int code,char *name,File_info *pf)
 {
     MYSQL *conn;
@@ -657,33 +677,39 @@ void add_file(int code,char *name,File_info *pf)
     char query[300]="insert into Directory(procode,filename,belongID,filetype,md5sum,filesize) values";
     sprintf(query,"%s(%d,'%s','%s','%s','%s',%d)",query,code,pf->filename,name,
             "f",pf->md5sum,pf->filesize);
-//    puts(query);
+    //puts(query);
     int t;
     t=mysql_query(conn,query);
-//    if(!t)
-//        printf("insert success\n");
+    //if(!t)
+    //    printf("insert success\n");
     mysql_close(conn);
 }
+
+// 登录日志插入
 void Llog(MYSQL *conn,const char *action,const char *name,const char *ip,const char *result)
 {
     char query[300]="insert into Login(action,name,ip_port,result) values";
     sprintf(query,"%s('%s','%s','%s','%s')",query,action,name,ip,result);
-//    puts(query);
+    //puts(query);
     int t;
     t=mysql_query(conn,query);
-//    if(!t)
-//        printf("insert success\n");
+    //if(!t)
+    //    printf("insert success\n");
 }
+
+// 操作日志插入
 void Olog(MYSQL *conn,const char *name,const char *handel,const char *object,const char *result)
 {
     char query[300]="insert into Operate(name,handle,object,result) values";
     sprintf(query,"%s('%s','%s','%s','%s')",query,name,handel,object,result);
-//    puts(query);
+    //puts(query);
     int t;
     t=mysql_query(conn,query);
-//    if(!t)
-//        printf("insert success\n");
+    //if(!t)
+    //    printf("insert success\n");
 }
+
+// 取出md5对应所有服务器的ip和端口，写入MQ_buf，返回0填满SPOT_NUM个，否则-1
 int get_mqbuf(MYSQL *conn,MQ_buf *pf)
 {
     MYSQL_RES *res;

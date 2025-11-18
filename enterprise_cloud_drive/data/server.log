@@ -1,0 +1,8 @@
+2025-11-18 21:09:05 [INFO] Server listening on 0.0.0.0:6000
+2025-11-18 21:09:48 [INFO] Client connected: 127.0.0.1:56516
+2025-11-18 21:21:41 [INFO] New user registered: keyouzhon
+2025-11-18 21:22:02 [INFO] User logged in: keyouzhon from 127.0.0.1:56516
+2025-11-18 21:35:59 [INFO] Client disconnected: keyouzhon (127.0.0.1:56516)
+2025-11-18 21:38:41 [INFO] Client connected: 127.0.0.1:34008
+2025-11-18 21:41:22 [INFO] User logged in: keyouzhon from 127.0.0.1:34008
+2025-11-18 21:41:32 [INFO] Upload complete: keyouzhon -> exit

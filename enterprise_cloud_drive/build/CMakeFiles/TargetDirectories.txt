@@ -1,0 +1,10 @@
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/CMakeFiles/edit_cache.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/CMakeFiles/rebuild_cache.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/server/CMakeFiles/cloud_drive_server_lib.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/server/CMakeFiles/cloud_drive_server.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/server/CMakeFiles/edit_cache.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/server/CMakeFiles/rebuild_cache.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/client/CMakeFiles/cloud_drive_client_lib.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/client/CMakeFiles/cloud_drive_client.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/client/CMakeFiles/edit_cache.dir
+/home/hht/project/cloudDisk/enterprise_cloud_drive/build/client/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcloud_drive_client_lib.a CMakeFiles/cloud_drive_client_lib.dir/src/client_app.cpp.o
+/usr/bin/ranlib libcloud_drive_client_lib.a
